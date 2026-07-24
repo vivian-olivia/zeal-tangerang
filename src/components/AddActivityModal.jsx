@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react';
 import { AppContext } from '../context/AppContext.jsx';
 
-export default function AddActivityModal({ onClose }) {
+export default function AddActivityModal({ onClose, initialDate = '' }) {
   const { setActivities, activities, showToast, GROUPS } = useContext(AppContext);
-  const [form, setForm] = useState({ title: '', type: 'PDG', date: '', groups: [] });
+  const [form, setForm] = useState({ title: '', type: 'PDG', date: initialDate, groups: [] });
 
   const toggleGroup = (groupId) => {
     setForm(prev => ({

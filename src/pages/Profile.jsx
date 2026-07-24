@@ -70,6 +70,20 @@ export default function Profile({ id }) {
                       <div className={`w-3 h-3 rounded-full ${llColor} inline-block`}></div> {member.loveLang || '-'}
                     </div>
                   </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <div className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-1">Tanggal Lahir</div>
+                      <div className="font-bold text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-lg text-sm">
+                        {member.bday ? new Date(member.bday).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-1">Ultah Rohani</div>
+                      <div className="font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 px-3 py-1.5 rounded-lg text-sm">
+                        {member.spiritualBday ? new Date(member.spiritualBday).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}
+                      </div>
+                    </div>
+                  </div>
                   {member.service && member.service.length > 0 && (
                     <div>
                       <div className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-1">Pelayanan</div>

@@ -11,6 +11,8 @@ export default function EditProfileModal({ member, isStatusVisible, onClose }) {
     gender: member.gender || 'L',
     loveLang: member.loveLang || 'Unknown',
     status: member.status,
+    bday: member.bday || '',
+    spiritualBday: member.spiritualBday || '',
     service: member.service || [],
     hasEducation: !!member.education,
     education: member.education || { univ: '', jurusan: '', angkatan: '', eduStatus: 'Aktif', graduationYear: '' },
@@ -31,6 +33,8 @@ export default function EditProfileModal({ member, isStatusVisible, onClose }) {
       phone: form.phone,
       gender: form.gender,
       loveLang: form.loveLang,
+      bday: form.bday || null,
+      spiritualBday: form.spiritualBday || null,
       service: form.service,
       status: isStatusVisible ? form.status : member.status,
       education: form.hasEducation ? {
@@ -80,6 +84,17 @@ export default function EditProfileModal({ member, isStatusVisible, onClose }) {
               <select value={form.loveLang} onChange={e => setForm({ ...form, loveLang: e.target.value })} className="w-full p-3.5 bg-slate-50 dark:bg-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium cursor-pointer text-slate-800 dark:text-slate-200">
                 {Object.keys(LOVE_LANGUAGES).map(ll => <option key={ll} value={ll}>{ll}</option>)}
               </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+            <div>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Tanggal Lahir</label>
+              <input type="date" value={form.bday} onChange={e => setForm({ ...form, bday: e.target.value })} className="w-full p-3.5 bg-slate-50 dark:bg-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-slate-800 dark:text-slate-200" />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Ulang Tahun Rohani</label>
+              <input type="date" value={form.spiritualBday} onChange={e => setForm({ ...form, spiritualBday: e.target.value })} className="w-full p-3.5 bg-slate-50 dark:bg-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-slate-800 dark:text-slate-200" />
             </div>
           </div>
 

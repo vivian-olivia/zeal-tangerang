@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Home, Users, Activity, Calendar, Heart, BookOpen } from 'lucide-react';
+import { Home, Users, Activity, Calendar, CalendarDays, Heart, BookOpen } from 'lucide-react';
 import { AppContext } from '../context/AppContext.jsx';
 
 const navItems = [
@@ -7,6 +7,7 @@ const navItems = [
   { id: 'members', label: 'Disciples', icon: Users },
   { id: 'dtree', label: 'D-Tree', icon: Activity },
   { id: 'aktivitas', label: 'Aktivitas', icon: Calendar },
+  { id: 'kalender', label: 'Kalender', icon: CalendarDays },
   { id: 'ibadah', label: 'Ibadah', icon: Heart },
   { id: 'bs', label: 'BS', icon: BookOpen },
 ];

@@ -10,6 +10,7 @@ import Ibadah from '../pages/Ibadah.jsx';
 import IbadahDetail from '../pages/IbadahDetail.jsx';
 import BibleStudy from '../pages/BibleStudy.jsx';
 import BSDetail from '../pages/BSDetail.jsx';
+import Kalender from '../pages/Kalender.jsx';
 
 export default function PageRouter() {
   const { currentPage } = useContext(AppContext);
@@ -24,6 +25,7 @@ export default function PageRouter() {
   if (currentPage.startsWith('ibadah_detail_')) return <IbadahDetail id={parseInt(currentPage.split('_')[2])} />;
   if (currentPage === 'bs') return <BibleStudy />;
   if (currentPage.startsWith('bs_detail_')) return <BSDetail id={parseInt(currentPage.split('_')[2])} />;
+  if (currentPage === 'kalender') return <Kalender />;
 
   return <div className="p-12 text-center text-slate-400 font-medium text-lg">Halaman tidak ditemukan.</div>;
 }
