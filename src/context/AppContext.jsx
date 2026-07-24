@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { GROUPS, LOVE_LANGUAGES, GENDER_COLORS, LIFE_STATUS_COLORS, MOCK_MEMBERS, MOCK_ACTIVITIES, MOCK_IBADAH, MOCK_BS } from '../data/mockData.js';
+import { GROUPS, LOVE_LANGUAGES, GENDER_COLORS, LIFE_STATUS_COLORS, SERVICE_OPTIONS, MOCK_MEMBERS, MOCK_ACTIVITIES, MOCK_IBADAH, MOCK_BS } from '../data/mockData.js';
 
 export const AppContext = createContext();
 
@@ -32,6 +32,12 @@ export function AppProvider({ children }) {
     setTimeout(() => setToast(null), 3000);
   };
 
+  // Keeps activeUser in sync when a member edits their own profile
+  const updateMember = (updatedMember) => {
+    setMembers(prev => prev.map(m => m.id === updatedMember.id ? updatedMember : m));
+    setActiveUser(prev => prev.id === updatedMember.id ? updatedMember : prev);
+  };
+
   // Helper for hash routing within components
   useEffect(() => {
     const handleHashChange = () => {
@@ -62,7 +68,7 @@ export function AppProvider({ children }) {
   };
 
   const contextValue = {
-    members, setMembers, GROUPS, LOVE_LANGUAGES, GENDER_COLORS, LIFE_STATUS_COLORS,
+    members, setMembers, updateMember, GROUPS, LOVE_LANGUAGES, GENDER_COLORS, LIFE_STATUS_COLORS, SERVICE_OPTIONS,
     activities, setActivities,
     ibadah, setIbadah,
     bsCases, setBsCases,

@@ -1,16 +1,14 @@
 import React, { useContext } from 'react';
-import { ChevronDown, Zap, Sun, Moon } from 'lucide-react';
+import { ChevronDown, Sun, Moon } from 'lucide-react';
 import { AppContext } from '../context/AppContext.jsx';
+import zealLogo from '../../assets/Logo Hitam Zeal.png';
 
 export default function MobileTopBar() {
   const { activeUser, setActiveUser, members, isDark, toggleDark } = useContext(AppContext);
   return (
     <div className="md:hidden flex items-center justify-between p-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800 z-20 sticky top-0 shadow-sm">
-      <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/30 transform -rotate-6">
-          <Zap size={16} className="rotate-6" />
-        </div>
-        <span className="font-bold text-xl text-slate-900 dark:text-white tracking-tight leading-none">Zeal</span>
+      <div className="bg-white rounded-xl px-2 py-1.5 shadow-sm">
+        <img src={zealLogo} alt="Zeal Tangerang" className="h-6 w-auto object-contain" />
       </div>
       <div className="flex items-center gap-2">
         <button

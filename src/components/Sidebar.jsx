@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
-import { Home, Users, Activity, Calendar, Heart, BookOpen, ChevronDown, Zap, Sun, Moon } from 'lucide-react';
+import { Home, Users, Activity, Calendar, Heart, BookOpen, ChevronDown, Sun, Moon } from 'lucide-react';
 import { AppContext } from '../context/AppContext.jsx';
+import zealLogo from '../../assets/Logo Hitam Zeal.png';
 
 const navItems = [
   { id: 'dashboard', label: 'Dashboard', icon: Home },
@@ -19,14 +20,8 @@ export default function Sidebar() {
       <div>
         <div className="p-8 pb-4">
           <div className="flex items-center justify-between gap-3 mb-2">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/30 transform -rotate-6">
-                <Zap size={22} className="rotate-6" />
-              </div>
-              <div>
-                <span className="font-bold text-2xl text-slate-900 dark:text-white tracking-tight block leading-none">Zeal</span>
-                <span className="text-sm font-medium text-indigo-600 dark:text-indigo-400 tracking-wider uppercase">Tangerang</span>
-              </div>
+            <div className="bg-white rounded-2xl px-3 py-2.5 shadow-sm">
+              <img src={zealLogo} alt="Zeal Tangerang" className="h-9 w-auto object-contain" />
             </div>
             <button
               type="button"

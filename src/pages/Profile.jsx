@@ -1,10 +1,13 @@
-import React, { useContext } from 'react';
-import { ChevronLeft, Heart, GraduationCap, Briefcase } from 'lucide-react';
+import React, { useContext, useState } from 'react';
+import { ChevronLeft, Heart, GraduationCap, Briefcase, Edit3 } from 'lucide-react';
 import { AppContext } from '../context/AppContext.jsx';
+import { getLifeStatusLabel } from '../data/mockData.js';
+import EditProfileModal from '../components/EditProfileModal.jsx';
 
 export default function Profile({ id }) {
   const { members, navigateTo, activeUser, GROUPS, LOVE_LANGUAGES, GENDER_COLORS, LIFE_STATUS_COLORS } = useContext(AppContext);
   const member = members.find(m => m.id === id);
+  const [showEdit, setShowEdit] = useState(false);
 
   if (!member) return <div className="p-10 text-center font-bold text-slate-400 text-xl">Member not found</div>;
 
@@ -24,15 +27,24 @@ export default function Profile({ id }) {
   };
 
   const isStatusVisible = canViewStatus(activeUser, member);
+  const canEdit = activeUser.id === member.id || activeUser.role === 'super_admin';
   const llColor = LOVE_LANGUAGES[member.loveLang] || LOVE_LANGUAGES['Unknown'];
   const genderColor = GENDER_COLORS[member.gender] || 'bg-slate-300';
-  const lifeStatusColor = LIFE_STATUS_COLORS[member.lifeStatus] || LIFE_STATUS_COLORS.Lainnya;
+  const lifeStatus = getLifeStatusLabel(member);
+  const lifeStatusColor = LIFE_STATUS_COLORS[lifeStatus] || LIFE_STATUS_COLORS.Lainnya;
 
   return (
     <div className="p-5 md:p-10">
-      <button onClick={() => navigateTo('members')} className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 mb-8 font-bold transition-colors">
-        <div className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg"><ChevronLeft size={20} /></div> Kembali
-      </button>
+      <div className="flex items-center justify-between mb-8">
+        <button onClick={() => navigateTo('members')} className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold transition-colors">
+          <div className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg"><ChevronLeft size={20} /></div> Kembali
+        </button>
+        {canEdit && (
+          <button onClick={() => setShowEdit(true)} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 dark:shadow-indigo-950 transition-all">
+            <Edit3 size={16}/> Edit Profil
+          </button>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-1">
@@ -81,43 +93,64 @@ export default function Profile({ id }) {
           <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-8">
             <h2 className="text-xl font-extrabold text-slate-900 dark:text-white mb-6 flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                <div className="p-2 bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 rounded-xl">
-                 {member.lifeStatus === 'Kerja' ? <Briefcase size={20}/> : <GraduationCap size={20}/>}
+                 {member.job ? <Briefcase size={20}/> : <GraduationCap size={20}/>}
                </div>
                Kesibukan Saat Ini
             </h2>
 
             <span className={`inline-block px-4 py-1.5 rounded-full text-sm font-bold border mb-6 ${lifeStatusColor}`}>
-              {member.lifeStatus || 'Lainnya'}
+              {lifeStatus}
             </span>
 
-            {member.lifeStatus === 'Kuliah' && member.education ? (
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                <div>
-                  <div className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-1">Universitas</div>
-                  <div className="font-bold text-slate-800 dark:text-slate-100">{member.education.univ}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-1">Jurusan</div>
-                  <div className="font-bold text-slate-800 dark:text-slate-100">{member.education.jurusan}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-1">Angkatan</div>
-                  <div className="font-bold text-slate-800 dark:text-slate-100">{member.education.angkatan}</div>
-                </div>
-              </div>
-            ) : member.lifeStatus === 'Kerja' && member.job ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <div className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-1">Pekerjaan</div>
-                  <div className="font-bold text-slate-800 dark:text-slate-100">{member.job.role}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-1">Tempat Kerja</div>
-                  <div className="font-bold text-slate-800 dark:text-slate-100">{member.job.company}</div>
-                </div>
-              </div>
-            ) : (
+            {!member.education && !member.job && (
               <p className="text-slate-400 dark:text-slate-500 italic font-medium">Belum ada informasi tambahan.</p>
+            )}
+
+            {member.education && (
+              <div className={member.job ? 'mb-6 pb-6 border-b border-slate-100 dark:border-slate-800' : ''}>
+                <div className="text-xs font-black text-blue-500 dark:text-blue-400 uppercase tracking-wider mb-3">Pendidikan</div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                  <div>
+                    <div className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-1">Universitas</div>
+                    <div className="font-bold text-slate-800 dark:text-slate-100">{member.education.univ}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-1">Jurusan</div>
+                    <div className="font-bold text-slate-800 dark:text-slate-100">{member.education.jurusan}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-1">Angkatan</div>
+                    <div className="font-bold text-slate-800 dark:text-slate-100">{member.education.angkatan}</div>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  {member.education.eduStatus === 'Lulus' ? (
+                    <span className="inline-block px-3 py-1 text-xs font-bold rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900">
+                      Lulus {member.education.graduationYear || ''}
+                    </span>
+                  ) : (
+                    <span className="inline-block px-3 py-1 text-xs font-bold rounded-lg bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900">
+                      Masih Kuliah
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {member.job && (
+              <div>
+                <div className="text-xs font-black text-emerald-500 dark:text-emerald-400 uppercase tracking-wider mb-3">Pekerjaan</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div>
+                    <div className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-1">Pekerjaan</div>
+                    <div className="font-bold text-slate-800 dark:text-slate-100">{member.job.role}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-1">Tempat Kerja</div>
+                    <div className="font-bold text-slate-800 dark:text-slate-100">{member.job.company}</div>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
 
@@ -160,6 +193,10 @@ export default function Profile({ id }) {
           </div>
         </div>
       </div>
+
+      {showEdit && (
+        <EditProfileModal member={member} isStatusVisible={isStatusVisible} onClose={() => setShowEdit(false)} />
+      )}
     </div>
   );
 }

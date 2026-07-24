@@ -5,12 +5,17 @@ import StatCard from '../components/StatCard.jsx';
 
 export default function Dashboard() {
   const { activeUser, members, navigateTo } = useContext(AppContext);
-  const currentMonth = new Date().getMonth();
+  const today = new Date();
+  const currentMonth = today.getMonth();
+  const todayDate = today.getDate();
 
-  const bdaysThisMonth = members.filter(m => {
-    if (!m.bday) return false;
-    return new Date(m.bday).getMonth() === currentMonth;
-  });
+  const bdaysThisMonth = members
+    .filter(m => m.bday && new Date(m.bday).getMonth() === currentMonth)
+    .map(m => {
+      const day = new Date(m.bday).getDate();
+      return { ...m, bdayDay: day, isToday: day === todayDate, isPast: day < todayDate };
+    })
+    .sort((a, b) => a.bdayDay - b.bdayDay);
 
   return (
     <div className="p-5 md:p-10">
@@ -74,14 +79,21 @@ export default function Dashboard() {
             {bdaysThisMonth.length > 0 ? (
               <div className="space-y-4">
                 {bdaysThisMonth.map(m => (
-                  <div key={m.id} onClick={() => navigateTo('profile_' + m.id)} className="flex items-center gap-4 cursor-pointer bg-white/60 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800 p-3 rounded-2xl transition-all shadow-sm border border-amber-200/50 dark:border-amber-900/40">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-300 to-orange-400 text-white font-bold text-lg flex items-center justify-center flex-shrink-0 shadow-inner">
+                  <div key={m.id} onClick={() => navigateTo('profile_' + m.id)} className={`flex items-center gap-4 cursor-pointer p-3 rounded-2xl transition-all shadow-sm border ${m.isPast ? 'bg-white/30 dark:bg-slate-800/20 border-amber-200/30 dark:border-amber-900/20 opacity-60 hover:opacity-100' : 'bg-white/60 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800 border-amber-200/50 dark:border-amber-900/40'}`}>
+                    <div className={`w-12 h-12 rounded-2xl text-white font-bold text-lg flex items-center justify-center flex-shrink-0 shadow-inner ${m.isPast ? 'bg-slate-300 dark:bg-slate-700' : 'bg-gradient-to-br from-amber-300 to-orange-400'}`}>
                       {m.name.charAt(0)}
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <div className="font-bold text-slate-800 dark:text-slate-100">{m.name.split(' ')[0]}</div>
                       <div className="text-sm font-medium text-amber-700 dark:text-amber-400">{new Date(m.bday).toLocaleDateString('id-ID', { day: 'numeric', month: 'long' })}</div>
                     </div>
+                    {m.isToday ? (
+                      <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500 text-white shadow-sm whitespace-nowrap">Hari ini! 🎉</span>
+                    ) : m.isPast ? (
+                      <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 whitespace-nowrap">Sudah lewat</span>
+                    ) : (
+                      <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 whitespace-nowrap">{m.bdayDay - todayDate} hari lagi</span>
+                    )}
                   </div>
                 ))}
               </div>

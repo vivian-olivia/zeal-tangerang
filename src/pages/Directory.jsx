@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Search, Plus, X } from 'lucide-react';
 import { AppContext } from '../context/AppContext.jsx';
+import { getLifeStatusLabel } from '../data/mockData.js';
 
 export default function Directory() {
   const { members, activeUser, navigateTo, showToast, GROUPS, LOVE_LANGUAGES, GENDER_COLORS, LIFE_STATUS_COLORS } = useContext(AppContext);
@@ -69,7 +70,8 @@ export default function Directory() {
         {filteredMembers.map(m => {
           const genderColor = GENDER_COLORS[m.gender] || 'bg-slate-300';
           const groupInfo = GROUPS.find(g => g.id === m.group);
-          const lifeStatusColor = LIFE_STATUS_COLORS[m.lifeStatus] || LIFE_STATUS_COLORS.Lainnya;
+          const lifeStatus = getLifeStatusLabel(m);
+          const lifeStatusColor = LIFE_STATUS_COLORS[lifeStatus] || LIFE_STATUS_COLORS.Lainnya;
           return (
             <div
               key={m.id}
@@ -85,11 +87,9 @@ export default function Directory() {
                 <span className={`mt-1.5 md:mt-3 px-2.5 md:px-4 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs font-bold text-white shadow-sm truncate max-w-full ${groupInfo?.color || 'bg-slate-500'}`}>
                   {groupInfo?.name || m.group}
                 </span>
-                {m.lifeStatus && (
-                  <span className={`mt-1.5 px-2.5 py-0.5 rounded-full text-[9px] md:text-[10px] font-bold border truncate max-w-full ${lifeStatusColor}`}>
-                    {m.lifeStatus}
-                  </span>
-                )}
+                <span className={`mt-1.5 px-2.5 py-0.5 rounded-full text-[9px] md:text-[10px] font-bold border truncate max-w-full ${lifeStatusColor}`}>
+                  {lifeStatus}
+                </span>
               </div>
             </div>
           );
