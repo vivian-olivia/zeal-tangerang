@@ -22,12 +22,12 @@ export default function AddActivityModal({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center backdrop-blur-sm p-4">
-      <div className="bg-white w-full max-w-xl rounded-3xl p-8 shadow-2xl animate-fade-in-up">
+    <div className="fixed inset-0 bg-slate-900/40 z-[60] flex items-center justify-center backdrop-blur-sm p-4">
+      <div className="bg-white w-full max-w-xl rounded-3xl p-6 md:p-8 shadow-2xl animate-fade-in-up max-h-[85vh] overflow-y-auto custom-scrollbar">
         <h2 className="text-2xl font-extrabold mb-6 text-slate-900">Tambah Aktivitas</h2>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div><label className="block text-sm font-bold text-slate-700 mb-2">Nama Kegiatan</label><input required type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="w-full p-3.5 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium"/></div>
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
             <div><label className="block text-sm font-bold text-slate-700 mb-2">Tanggal</label><input required type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} className="w-full p-3.5 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium"/></div>
             <div><label className="block text-sm font-bold text-slate-700 mb-2">Tipe</label><select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} className="w-full p-3.5 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium cursor-pointer"><option>PDG</option><option>Fellowship</option><option>Lainnya</option></select></div>
           </div>

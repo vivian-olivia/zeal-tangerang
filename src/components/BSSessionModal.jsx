@@ -4,7 +4,7 @@ export default function BSSessionModal({ title, submitLabel, form, setForm, memb
   const toggleSitIn = (mId) => setForm(prev => ({ ...prev, sitIn: prev.sitIn.includes(mId) ? prev.sitIn.filter(x => x !== mId) : [...prev.sitIn, mId] }));
 
   return (
-    <div className="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 bg-slate-900/40 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
        <div className="bg-white w-full max-w-2xl rounded-3xl p-8 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar animate-fade-in-up">
           <h2 className="text-2xl font-extrabold mb-8 text-slate-900">{title}</h2>
           <form onSubmit={onSubmit} className="space-y-6">

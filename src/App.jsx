@@ -20,7 +20,7 @@ function AppShell() {
       <Sidebar />
 
       {/* Added pb-24 for mobile to avoid content being hidden under the BottomNav */}
-      <main className="flex-1 overflow-y-auto relative z-10 scroll-smooth custom-scrollbar pb-24 md:pb-0">
+      <main className="flex-1 overflow-y-auto relative scroll-smooth custom-scrollbar pb-24 md:pb-0">
         <div className="max-w-7xl mx-auto">
            <PageRouter />
         </div>

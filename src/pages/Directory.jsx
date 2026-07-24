@@ -53,19 +53,19 @@ export default function Directory() {
             className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-medium outline-none"
           />
         </div>
-        <div className="flex gap-4 w-full md:w-auto">
-          <select value={filterGroup} onChange={e => setFilterGroup(e.target.value)} className="bg-slate-50 px-4 py-3 rounded-2xl font-medium text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+        <div className="grid grid-cols-2 gap-3 w-full md:flex md:gap-4 md:w-auto">
+          <select value={filterGroup} onChange={e => setFilterGroup(e.target.value)} className="w-full min-w-0 truncate bg-slate-50 px-3 md:px-4 py-3 rounded-2xl font-medium text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
             <option value="All">Semua Grup</option>
             {GROUPS.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
           </select>
-          <select value={filterLL} onChange={e => setFilterLL(e.target.value)} className="bg-slate-50 px-4 py-3 rounded-2xl font-medium text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+          <select value={filterLL} onChange={e => setFilterLL(e.target.value)} className="w-full min-w-0 truncate bg-slate-50 px-3 md:px-4 py-3 rounded-2xl font-medium text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
             <option value="All">Semua Love Language</option>
             {Object.keys(LOVE_LANGUAGES).map(ll => ll !== 'Unknown' && <option key={ll} value={ll}>{ll}</option>)}
           </select>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
         {filteredMembers.map(m => {
           const llColor = LOVE_LANGUAGES[m.loveLang] || LOVE_LANGUAGES['Unknown'];
           const groupInfo = GROUPS.find(g => g.id === m.group);
@@ -73,15 +73,15 @@ export default function Directory() {
             <div
               key={m.id}
               onClick={() => navigateTo('profile_' + m.id)}
-              className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+              className="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-slate-100 overflow-hidden cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
             >
-              <div className={`h-2.5 w-full ${llColor}`}></div>
-              <div className="p-6 flex flex-col items-center text-center">
-                <div className="w-24 h-24 rounded-full bg-slate-50 flex items-center justify-center text-3xl font-black text-slate-300 mb-5 group-hover:scale-110 transition-transform duration-300 border-4 border-white shadow-md">
+              <div className={`h-1.5 md:h-2.5 w-full ${llColor}`}></div>
+              <div className="p-3 md:p-6 flex flex-col items-center text-center">
+                <div className="w-14 h-14 md:w-24 md:h-24 rounded-full bg-slate-50 flex items-center justify-center text-lg md:text-3xl font-black text-slate-300 mb-2 md:mb-5 group-hover:scale-110 transition-transform duration-300 border-2 md:border-4 border-white shadow-md">
                   {m.name.charAt(0)}
                 </div>
-                <h3 className="font-extrabold text-slate-900 text-lg">{m.name}</h3>
-                <span className={`mt-3 px-4 py-1.5 rounded-full text-xs font-bold text-white shadow-sm ${groupInfo?.color || 'bg-slate-500'}`}>
+                <h3 className="font-extrabold text-slate-900 text-xs md:text-lg leading-tight truncate max-w-full">{m.name}</h3>
+                <span className={`mt-1.5 md:mt-3 px-2.5 md:px-4 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs font-bold text-white shadow-sm truncate max-w-full ${groupInfo?.color || 'bg-slate-500'}`}>
                   {groupInfo?.name || m.group}
                 </span>
               </div>
@@ -91,8 +91,8 @@ export default function Directory() {
       </div>
 
       {showInviteModal && (
-        <div className="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center backdrop-blur-sm p-4">
-          <div className="bg-white w-full max-w-md rounded-3xl p-8 shadow-2xl animate-fade-in-up">
+        <div className="fixed inset-0 bg-slate-900/40 z-[60] flex items-center justify-center backdrop-blur-sm p-4">
+          <div className="bg-white w-full max-w-md rounded-3xl p-8 shadow-2xl animate-fade-in-up max-h-[85vh] overflow-y-auto custom-scrollbar">
             <div className="flex justify-between items-center mb-8">
               <h2 className="text-2xl font-extrabold text-slate-900">Undang Anggota</h2>
               <button onClick={() => setShowInviteModal(false)} className="p-2 bg-slate-100 rounded-full text-slate-400 hover:text-slate-600"><X size={20}/></button>

@@ -61,8 +61,8 @@ export default function BibleStudy() {
       </div>
 
       {showAddCase && (
-        <div className="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center backdrop-blur-sm p-4">
-          <div className="bg-white w-full max-w-md rounded-3xl p-8 shadow-2xl animate-fade-in-up">
+        <div className="fixed inset-0 bg-slate-900/40 z-[60] flex items-center justify-center backdrop-blur-sm p-4">
+          <div className="bg-white w-full max-w-md rounded-3xl p-8 shadow-2xl animate-fade-in-up max-h-[85vh] overflow-y-auto custom-scrollbar">
             <h2 className="text-2xl font-extrabold mb-6 text-slate-900">Mulai BS Baru</h2>
             <form onSubmit={handleAddCase} className="space-y-5">
               <div><label className="block text-sm font-bold text-slate-700 mb-2">Nama Orang (Studi-an)</label><input required type="text" value={newCase.personName} onChange={e => setNewCase({ ...newCase, personName: e.target.value })} className="w-full p-3.5 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium"/></div>
