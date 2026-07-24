@@ -9,7 +9,7 @@ const styles = {
 
 export default function StatCard({ title, value, icon: Icon, type }) {
   return (
-    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-lg transition-all group overflow-hidden relative">
+    <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col justify-between hover:shadow-lg transition-all group overflow-hidden relative">
       <div className={`absolute top-[-50%] right-[-20%] w-32 h-32 bg-gradient-to-br ${styles[type]} rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity`}></div>
       <div className="flex items-center gap-4 mb-4">
         <div className={`w-14 h-14 rounded-2xl flex-shrink-0 flex items-center justify-center bg-gradient-to-br ${styles[type]} text-white shadow-lg`}>
@@ -17,8 +17,8 @@ export default function StatCard({ title, value, icon: Icon, type }) {
         </div>
       </div>
       <div>
-        <div className="text-3xl font-black text-slate-800 tracking-tight">{value}</div>
-        <div className="text-sm font-semibold text-slate-500 mt-1">{title}</div>
+        <div className="text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight">{value}</div>
+        <div className="text-sm font-semibold text-slate-500 dark:text-slate-400 mt-1">{title}</div>
       </div>
     </div>
   );

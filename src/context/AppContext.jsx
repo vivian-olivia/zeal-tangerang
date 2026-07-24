@@ -1,7 +1,13 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { GROUPS, LOVE_LANGUAGES, MOCK_MEMBERS, MOCK_ACTIVITIES, MOCK_IBADAH, MOCK_BS } from '../data/mockData.js';
+import { GROUPS, LOVE_LANGUAGES, GENDER_COLORS, LIFE_STATUS_COLORS, MOCK_MEMBERS, MOCK_ACTIVITIES, MOCK_IBADAH, MOCK_BS } from '../data/mockData.js';
 
 export const AppContext = createContext();
+
+function getInitialDarkMode() {
+  const stored = localStorage.getItem('zeal-theme');
+  if (stored) return stored === 'dark';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
 
 export function AppProvider({ children }) {
   const [members, setMembers] = useState(MOCK_MEMBERS);
@@ -12,6 +18,14 @@ export function AppProvider({ children }) {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [activeUser, setActiveUser] = useState(MOCK_MEMBERS[0]);
   const [toast, setToast] = useState(null);
+  const [isDark, setIsDark] = useState(getInitialDarkMode);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDark);
+    localStorage.setItem('zeal-theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
+
+  const toggleDark = () => setIsDark(prev => !prev);
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type });
@@ -48,7 +62,7 @@ export function AppProvider({ children }) {
   };
 
   const contextValue = {
-    members, setMembers, GROUPS, LOVE_LANGUAGES,
+    members, setMembers, GROUPS, LOVE_LANGUAGES, GENDER_COLORS, LIFE_STATUS_COLORS,
     activities, setActivities,
     ibadah, setIbadah,
     bsCases, setBsCases,
@@ -56,6 +70,7 @@ export function AppProvider({ children }) {
     activeUser, setActiveUser,
     showToast,
     navigateTo,
+    isDark, toggleDark,
   };
 
   return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>;
