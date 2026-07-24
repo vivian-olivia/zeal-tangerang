@@ -44,6 +44,20 @@ export function getLifeStatusLabel(member) {
 
 export const SERVICE_OPTIONS = ['Songmin', 'Multimedia', 'Ushers', 'Social Media', 'KKK'];
 
+const ALL_GROUP_IDS = GROUPS.map(g => g.id);
+
+export const MEETING_TYPES = ['Ibadah Minggu', 'PDG', 'Bible Talk', 'Fellowship', 'Lainnya'];
+
+// Shared Tailwind classes per meeting type — reused by the Pertemuan list badges,
+// calendar dots, and Dashboard's upcoming-events icons so the palette stays consistent.
+export const MEETING_TYPE_STYLES = {
+  'Ibadah Minggu': { badge: 'text-rose-600 bg-rose-50 dark:bg-rose-500/10 dark:text-rose-400', dot: 'bg-rose-500', iconBg: 'text-rose-500 bg-rose-50 dark:bg-rose-500/10' },
+  PDG: { badge: 'text-indigo-600 bg-indigo-50 dark:bg-indigo-500/10 dark:text-indigo-400', dot: 'bg-indigo-500', iconBg: 'text-indigo-500 bg-indigo-50 dark:bg-indigo-500/10' },
+  'Bible Talk': { badge: 'text-violet-600 bg-violet-50 dark:bg-violet-500/10 dark:text-violet-400', dot: 'bg-violet-500', iconBg: 'text-violet-500 bg-violet-50 dark:bg-violet-500/10' },
+  Fellowship: { badge: 'text-teal-600 bg-teal-50 dark:bg-teal-500/10 dark:text-teal-400', dot: 'bg-teal-500', iconBg: 'text-teal-500 bg-teal-50 dark:bg-teal-500/10' },
+  Lainnya: { badge: 'text-slate-600 bg-slate-100 dark:bg-slate-800 dark:text-slate-300', dot: 'bg-slate-400', iconBg: 'text-slate-500 bg-slate-100 dark:bg-slate-800' },
+};
+
 // Helper so mock "upcoming" dates stay upcoming no matter when the app is actually opened
 const addDays = (n) => {
   const d = new Date();
@@ -72,18 +86,15 @@ export const MOCK_MEMBERS = [
 
 export const MOCK_ACTIVITIES = [
   { id: 1, title: 'PDG Gabungan', type: 'PDG', date: '2024-06-15', groups: ['RK', 'VY', 'MP'], attendance: { 2: { status: 'Hadir', reason: '' }, 3: { status: 'Hadir', reason: '' }, 4: { status: 'Izin', reason: 'Kerja' } } },
-  { id: 2, title: 'Bible Talk Spesial', type: 'Fellowship', date: '2024-06-20', groups: ['AS', 'JC', 'JR'], attendance: {} },
+  { id: 2, title: 'Bible Talk Spesial', type: 'Bible Talk', date: '2024-06-20', groups: ['AS', 'JC', 'JR'], attendance: {} },
   { id: 3, title: 'Retreat Youth', type: 'Lainnya', date: '2024-07-01', groups: ['CT', 'RK', 'MP', 'VY', 'AS', 'JC', 'JR'], attendance: {} },
   { id: 4, title: 'PDG Persiapan Retreat', type: 'PDG', date: addDays(3), groups: ['RK', 'VY', 'MP'], attendance: {} },
   { id: 5, title: 'Sharing Session Alumni', type: 'Fellowship', date: addDays(10), groups: ['AS', 'JC', 'JR'], attendance: {} },
-];
-
-export const MOCK_IBADAH = [
-  { id: 1, date: '2024-06-16', session: 'Pagi', attendance: { 1: { status: 'Hadir' }, 2: { status: 'Hadir' }, 12: { status: 'Alfa' } } },
-  { id: 2, date: '2024-06-23', session: 'Sore', attendance: {} },
-  { id: 3, date: '2024-06-30', session: 'Pagi', attendance: {} },
-  { id: 4, date: addDays(6), session: 'Pagi', attendance: {} },
-  { id: 5, date: addDays(13), session: 'Sore', attendance: {} },
+  { id: 6, title: 'Ibadah Minggu', type: 'Ibadah Minggu', date: '2024-06-16', groups: ALL_GROUP_IDS, attendance: { 1: { status: 'Hadir', reason: '' }, 2: { status: 'Hadir', reason: '' }, 12: { status: 'Alfa', reason: '' } } },
+  { id: 7, title: 'Ibadah Minggu', type: 'Ibadah Minggu', date: '2024-06-23', groups: ALL_GROUP_IDS, attendance: {} },
+  { id: 8, title: 'Ibadah Minggu', type: 'Ibadah Minggu', date: '2024-06-30', groups: ALL_GROUP_IDS, attendance: {} },
+  { id: 9, title: 'Ibadah Minggu', type: 'Ibadah Minggu', date: addDays(6), groups: ALL_GROUP_IDS, attendance: {} },
+  { id: 10, title: 'Ibadah Minggu', type: 'Ibadah Minggu', date: addDays(13), groups: ALL_GROUP_IDS, attendance: {} },
 ];
 
 export const MOCK_BS = [

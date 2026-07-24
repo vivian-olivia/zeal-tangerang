@@ -5,23 +5,24 @@ import StatCard from '../components/StatCard.jsx';
 import BirthdayWidget from '../components/BirthdayWidget.jsx';
 
 export default function Dashboard() {
-  const { activeUser, members, activities, ibadah, navigateTo } = useContext(AppContext);
+  const { activeUser, members, activities, MEETING_TYPE_STYLES, navigateTo, setPertemuanView } = useContext(AppContext);
 
   const todayStr = new Date().toISOString().split('T')[0];
   const today = new Date();
 
-  const upcomingEvents = [
-    ...activities.map(a => ({ key: 'act_' + a.id, title: a.title, type: a.type, date: a.date, icon: Activity, color: 'text-indigo-500 bg-indigo-50 dark:bg-indigo-500/10', page: 'activity_detail_' + a.id })),
-    ...ibadah.map(i => ({ key: 'ibd_' + i.id, title: `Ibadah Raya - Sesi ${i.session}`, type: 'Ibadah', date: i.date, icon: Heart, color: 'text-rose-500 bg-rose-50 dark:bg-rose-500/10', page: 'ibadah_detail_' + i.id })),
-  ]
-    .filter(e => e.date >= todayStr)
+  const upcomingEvents = activities
+    .filter(a => a.date >= todayStr)
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(0, 5)
-    .map(e => {
-      const diffDays = Math.round((new Date(e.date) - today) / 86400000);
+    .map(a => {
+      const diffDays = Math.round((new Date(a.date) - today) / 86400000);
       const label = diffDays <= 0 ? 'Hari ini' : diffDays === 1 ? 'Besok' : `${diffDays} hari lagi`;
-      return { ...e, label };
+      const style = MEETING_TYPE_STYLES[a.type] || MEETING_TYPE_STYLES.Lainnya;
+      const icon = a.type === 'Ibadah Minggu' ? Heart : Activity;
+      return { key: 'act_' + a.id, title: a.title, type: a.type, date: a.date, icon, color: style.iconBg, page: 'activity_detail_' + a.id, label };
     });
+
+  const goToKalender = () => { setPertemuanView('kalender'); navigateTo('pertemuan'); };
 
   return (
     <div className="p-5 md:p-10">
@@ -54,7 +55,7 @@ export default function Dashboard() {
                 <div className="p-2 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-xl"><CalendarClock size={20}/></div>
                 Acara Mendatang
               </h2>
-              <button onClick={() => navigateTo('kalender')} className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 bg-indigo-50 dark:bg-indigo-500/10 px-4 py-2 rounded-full transition-colors">Lihat Kalender</button>
+              <button onClick={goToKalender} className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 bg-indigo-50 dark:bg-indigo-500/10 px-4 py-2 rounded-full transition-colors">Lihat Kalender</button>
             </div>
             {upcomingEvents.length > 0 ? (
               <div className="space-y-4">

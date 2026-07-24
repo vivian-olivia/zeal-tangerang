@@ -1,14 +1,12 @@
 import React, { useContext } from 'react';
-import { Home, Users, Activity, Calendar, CalendarDays, Heart, BookOpen } from 'lucide-react';
+import { Home, Users, Activity, CalendarDays, BookOpen } from 'lucide-react';
 import { AppContext } from '../context/AppContext.jsx';
 
 const navItems = [
   { id: 'dashboard', label: 'Home', icon: Home },
   { id: 'members', label: 'Disciples', icon: Users },
   { id: 'dtree', label: 'D-Tree', icon: Activity },
-  { id: 'aktivitas', label: 'Aktivitas', icon: Calendar },
-  { id: 'kalender', label: 'Kalender', icon: CalendarDays },
-  { id: 'ibadah', label: 'Ibadah', icon: Heart },
+  { id: 'pertemuan', label: 'Pertemuan', icon: CalendarDays },
   { id: 'bs', label: 'BS', icon: BookOpen },
 ];
 

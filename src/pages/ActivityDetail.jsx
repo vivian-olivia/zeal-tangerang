@@ -7,6 +7,7 @@ export default function ActivityDetail({ id }) {
   const activity = activities.find(a => a.id === id);
   if (!activity) return null;
 
+  const isAllGroups = activity.groups.length === GROUPS.length;
   const targetMembers = members.filter(m => activity.groups.includes(m.group));
 
   const handleStatusChange = (memberId, status, reason = '') => {
@@ -16,13 +17,13 @@ export default function ActivityDetail({ id }) {
 
   return (
     <div className="p-5 md:p-10">
-      <button onClick={() => navigateTo('aktivitas')} className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 mb-8 font-bold transition-colors"><div className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg"><ChevronLeft size={20} /></div> Kembali</button>
+      <button onClick={() => navigateTo('pertemuan')} className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 mb-8 font-bold transition-colors"><div className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg"><ChevronLeft size={20} /></div> Kembali</button>
       <div className="bg-gradient-to-br from-indigo-600 to-violet-700 p-8 rounded-3xl shadow-lg shadow-indigo-200 dark:shadow-indigo-950 mb-8 text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -z-0"></div>
         <div className="relative z-10">
            <h1 className="text-3xl font-black mb-2">{activity.title}</h1>
            <div className="flex flex-wrap gap-3 items-center text-indigo-100 font-medium">
-             <span>{activity.date}</span> • <span className="px-2 py-1 bg-white/20 rounded-lg text-sm font-bold">{activity.type}</span> • <span>Target: {activity.groups.join(', ')}</span>
+             <span>{activity.date}</span> • <span className="px-2 py-1 bg-white/20 rounded-lg text-sm font-bold">{activity.type}</span> • <span>Target: {isAllGroups ? 'Semua Anggota' : activity.groups.join(', ')}</span>
            </div>
         </div>
       </div>

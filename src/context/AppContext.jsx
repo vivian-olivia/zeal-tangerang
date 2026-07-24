@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { GROUPS, LOVE_LANGUAGES, GENDER_COLORS, LIFE_STATUS_COLORS, SERVICE_OPTIONS, MOCK_MEMBERS, MOCK_ACTIVITIES, MOCK_IBADAH, MOCK_BS } from '../data/mockData.js';
+import { GROUPS, LOVE_LANGUAGES, GENDER_COLORS, LIFE_STATUS_COLORS, SERVICE_OPTIONS, MEETING_TYPES, MEETING_TYPE_STYLES, MOCK_MEMBERS, MOCK_ACTIVITIES, MOCK_BS } from '../data/mockData.js';
 
 export const AppContext = createContext();
 
@@ -12,10 +12,10 @@ function getInitialDarkMode() {
 export function AppProvider({ children }) {
   const [members, setMembers] = useState(MOCK_MEMBERS);
   const [activities, setActivities] = useState(MOCK_ACTIVITIES);
-  const [ibadah, setIbadah] = useState(MOCK_IBADAH);
   const [bsCases, setBsCases] = useState(MOCK_BS);
 
   const [currentPage, setCurrentPage] = useState('dashboard');
+  const [pertemuanView, setPertemuanView] = useState('list');
   const [activeUser, setActiveUser] = useState(MOCK_MEMBERS[0]);
   const [toast, setToast] = useState(null);
   const [isDark, setIsDark] = useState(getInitialDarkMode);
@@ -69,10 +69,11 @@ export function AppProvider({ children }) {
 
   const contextValue = {
     members, setMembers, updateMember, GROUPS, LOVE_LANGUAGES, GENDER_COLORS, LIFE_STATUS_COLORS, SERVICE_OPTIONS,
+    MEETING_TYPES, MEETING_TYPE_STYLES,
     activities, setActivities,
-    ibadah, setIbadah,
     bsCases, setBsCases,
     currentPage, setCurrentPage,
+    pertemuanView, setPertemuanView,
     activeUser, setActiveUser,
     showToast,
     navigateTo,

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Home, Users, Activity, Calendar, CalendarDays, Heart, BookOpen, ChevronDown, Sun, Moon } from 'lucide-react';
+import { Home, Users, Activity, CalendarDays, BookOpen, ChevronDown, Sun, Moon } from 'lucide-react';
 import { AppContext } from '../context/AppContext.jsx';
 import zealLogo from '../../assets/Logo Hitam Zeal.png';
 
@@ -7,9 +7,7 @@ const navItems = [
   { id: 'dashboard', label: 'Dashboard', icon: Home },
   { id: 'members', label: 'Disciples', icon: Users },
   { id: 'dtree', label: 'D-Tree', icon: Activity },
-  { id: 'aktivitas', label: 'Aktivitas', icon: Calendar },
-  { id: 'kalender', label: 'Kalender', icon: CalendarDays },
-  { id: 'ibadah', label: 'Ibadah', icon: Heart },
+  { id: 'pertemuan', label: 'Pertemuan', icon: CalendarDays },
   { id: 'bs', label: 'Bible Study', icon: BookOpen },
 ];
 
