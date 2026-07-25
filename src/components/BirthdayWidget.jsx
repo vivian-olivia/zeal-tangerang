@@ -55,9 +55,9 @@ export default function BirthdayWidget({ title, icon: Icon, theme = 'amber', dat
               <div className={`w-12 h-12 rounded-2xl text-white font-bold text-lg flex items-center justify-center flex-shrink-0 shadow-inner ${m.isPast ? 'bg-slate-300 dark:bg-slate-700' : t.avatar}`}>
                 {m.name.charAt(0)}
               </div>
-              <div className="flex-1">
-                <div className="font-bold text-slate-800 dark:text-slate-100">{m.name.split(' ')[0]}</div>
-                <div className={`text-sm font-medium ${t.date}`}>{new Date(m[dateField]).toLocaleDateString('id-ID', { day: 'numeric', month: 'long' })}</div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-slate-800 dark:text-slate-100 truncate">{m.name.split(' ')[0]}</div>
+                <div className={`text-sm font-medium truncate ${t.date}`}>{new Date(m[dateField]).toLocaleDateString('id-ID', { day: 'numeric', month: 'long' })}</div>
               </div>
               {m.isToday ? (
                 <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500 text-white shadow-sm whitespace-nowrap">Hari ini! 🎉</span>

@@ -3,21 +3,25 @@ import { Plus, Search } from 'lucide-react';
 import { AppContext } from '../context/AppContext.jsx';
 
 export default function BibleStudy() {
-  const { bsCases, setBsCases, navigateTo, showToast, members, activeUser } = useContext(AppContext);
+  const { bsCases, addBsCase, navigateTo, showToast, members, activeUser } = useContext(AppContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [showAddCase, setShowAddCase] = useState(false);
   const [newCase, setNewCase] = useState({ personName: '', teacherId: activeUser.id });
+  const [submitting, setSubmitting] = useState(false);
+  const canManage = activeUser.role === 'leader' || activeUser.role === 'super_admin';
 
   const filteredBS = bsCases.filter(bs => {
     return bs.personName.toLowerCase().includes(searchTerm.toLowerCase()) &&
            (filterStatus === 'All' || bs.status === filterStatus);
   });
 
-  const handleAddCase = (e) => {
+  const handleAddCase = async (e) => {
     e.preventDefault();
-    const newId = bsCases.length + 1;
-    setBsCases([{ id: newId, personName: newCase.personName, teacherId: Number(newCase.teacherId), status: 'Aktif', sessions: [] }, ...bsCases]);
+    setSubmitting(true);
+    const { error } = await addBsCase(newCase.personName, Number(newCase.teacherId));
+    setSubmitting(false);
+    if (error) return;
     setShowAddCase(false);
     showToast('Bible Study baru berhasil dibuat!');
   };
@@ -26,9 +30,11 @@ export default function BibleStudy() {
     <div className="p-5 md:p-10">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
         <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Bible Study</h1>
-        <button onClick={() => setShowAddCase(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-indigo-200 dark:shadow-indigo-950 hover:-translate-y-0.5 transition-all">
-           <Plus size={20}/> Tambah BS Baru
-        </button>
+        {canManage && (
+          <button onClick={() => setShowAddCase(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-indigo-200 dark:shadow-indigo-950 hover:-translate-y-0.5 transition-all">
+             <Plus size={20}/> Tambah BS Baru
+          </button>
+        )}
       </div>
 
       <div className="bg-white dark:bg-slate-900 p-4 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col md:flex-row gap-4 mb-8">
@@ -72,7 +78,7 @@ export default function BibleStudy() {
                   {members.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
                 </select>
               </div>
-              <div className="pt-4 flex gap-4"><button type="button" onClick={() => setShowAddCase(false)} className="flex-1 p-3.5 bg-slate-100 dark:bg-slate-800 rounded-2xl font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">Batal</button><button type="submit" className="flex-1 p-3.5 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg hover:bg-indigo-700">Simpan</button></div>
+              <div className="pt-4 flex gap-4"><button type="button" onClick={() => setShowAddCase(false)} className="flex-1 p-3.5 bg-slate-100 dark:bg-slate-800 rounded-2xl font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">Batal</button><button type="submit" disabled={submitting} className="flex-1 p-3.5 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg hover:bg-indigo-700 disabled:opacity-60">{submitting ? 'Menyimpan...' : 'Simpan'}</button></div>
             </form>
           </div>
         </div>

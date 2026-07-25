@@ -1,23 +1,46 @@
 import React, { useContext, useState } from 'react';
-import { Search, Plus, X } from 'lucide-react';
+import { Search, Plus, X, Copy, Check } from 'lucide-react';
 import { AppContext } from '../context/AppContext.jsx';
 import { getLifeStatusLabel } from '../data/mockData.js';
 
 export default function Directory() {
-  const { members, activeUser, navigateTo, showToast, GROUPS, LOVE_LANGUAGES, GENDER_COLORS, LIFE_STATUS_COLORS } = useContext(AppContext);
+  const { members, activeUser, navigateTo, showToast, createInvite, GROUPS, LOVE_LANGUAGES, GENDER_COLORS, LIFE_STATUS_COLORS } = useContext(AppContext);
   const [showInviteModal, setShowInviteModal] = useState(false);
-  const [inviteForm, setInviteForm] = useState({ name: '', email: '' });
+  const [inviteForm, setInviteForm] = useState({ groupId: GROUPS[0]?.id || '', note: '' });
+  const [inviteLink, setInviteLink] = useState('');
+  const [creatingInvite, setCreatingInvite] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   // Search & Filter State
   const [searchTerm, setSearchTerm] = useState('');
   const [filterGroup, setFilterGroup] = useState('All');
   const [filterLL, setFilterLL] = useState('All');
 
-  const handleInvite = (e) => {
-    e.preventDefault();
-    showToast(`Undangan berhasil dikirim ke ${inviteForm.email}`);
+  const closeInviteModal = () => {
     setShowInviteModal(false);
-    setInviteForm({ name: '', email: '' });
+    setInviteForm({ groupId: GROUPS[0]?.id || '', note: '' });
+    setInviteLink('');
+    setCopied(false);
+  };
+
+  const handleCreateInvite = async (e) => {
+    e.preventDefault();
+    setCreatingInvite(true);
+    const { data, error } = await createInvite({ groupId: inviteForm.groupId, note: inviteForm.note });
+    setCreatingInvite(false);
+    if (error) return;
+    setInviteLink(`${window.location.origin}/#/register_${data.token}`);
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(inviteLink);
+      setCopied(true);
+      showToast('Link undangan disalin!');
+      setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      showToast('Gagal menyalin link.', 'error');
+    }
   };
 
   const filteredMembers = members.filter(m => {
@@ -101,22 +124,40 @@ export default function Directory() {
           <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-8 shadow-2xl animate-fade-in-up max-h-[85vh] overflow-y-auto custom-scrollbar">
             <div className="flex justify-between items-center mb-8">
               <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">Undang Anggota</h2>
-              <button onClick={() => setShowInviteModal(false)} className="p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><X size={20}/></button>
+              <button onClick={closeInviteModal} className="p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><X size={20}/></button>
             </div>
-            <form onSubmit={handleInvite} className="space-y-5">
-              <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Nama Lengkap</label>
-                <input required type="text" value={inviteForm.name} onChange={e => setInviteForm({ ...inviteForm, name: e.target.value })} className="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-medium outline-none text-slate-800 dark:text-slate-200" placeholder="Ketik nama lengkap..." />
+
+            {!inviteLink ? (
+              <form onSubmit={handleCreateInvite} className="space-y-5">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Grup Tujuan</label>
+                  <select required value={inviteForm.groupId} onChange={e => setInviteForm({ ...inviteForm, groupId: e.target.value })} className="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-medium outline-none cursor-pointer text-slate-800 dark:text-slate-200">
+                    {GROUPS.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Catatan <span className="text-slate-400 font-medium">(opsional)</span></label>
+                  <input type="text" value={inviteForm.note} onChange={e => setInviteForm({ ...inviteForm, note: e.target.value })} className="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-medium outline-none text-slate-800 dark:text-slate-200" placeholder="Mis. nama calon anggota, untuk diingat..." />
+                </div>
+                <div className="pt-4 flex gap-4">
+                  <button type="button" onClick={closeInviteModal} className="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 rounded-2xl font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Batal</button>
+                  <button type="submit" disabled={creatingInvite} className="flex-1 py-3.5 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 dark:shadow-indigo-950 hover:bg-indigo-700 transition-colors disabled:opacity-60">
+                    {creatingInvite ? 'Membuat...' : 'Buat Undangan'}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="space-y-5">
+                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Bagikan link ini ke calon anggota. Link hanya bisa dipakai sekali untuk mendaftar.</p>
+                <div className="flex items-center gap-2 p-3.5 bg-slate-50 dark:bg-slate-800 rounded-2xl">
+                  <span className="flex-1 text-sm font-mono text-slate-700 dark:text-slate-300 truncate">{inviteLink}</span>
+                  <button type="button" onClick={handleCopyLink} className="p-2 bg-white dark:bg-slate-900 rounded-xl text-indigo-600 dark:text-indigo-400 shadow-sm flex-shrink-0">
+                    {copied ? <Check size={16} /> : <Copy size={16} />}
+                  </button>
+                </div>
+                <button type="button" onClick={closeInviteModal} className="w-full py-3.5 bg-slate-100 dark:bg-slate-800 rounded-2xl font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Selesai</button>
               </div>
-              <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Email</label>
-                <input required type="email" value={inviteForm.email} onChange={e => setInviteForm({ ...inviteForm, email: e.target.value })} className="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 font-medium outline-none text-slate-800 dark:text-slate-200" placeholder="email@contoh.com" />
-              </div>
-              <div className="pt-4 flex gap-4">
-                <button type="button" onClick={() => setShowInviteModal(false)} className="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 rounded-2xl font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Batal</button>
-                <button type="submit" className="flex-1 py-3.5 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 dark:shadow-indigo-950 hover:bg-indigo-700 transition-colors">Kirim</button>
-              </div>
-            </form>
+            )}
           </div>
         </div>
       )}

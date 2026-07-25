@@ -2,8 +2,9 @@ import React, { useContext, useState } from 'react';
 import { AppContext } from '../context/AppContext.jsx';
 
 export default function AddActivityModal({ onClose, initialDate = '' }) {
-  const { setActivities, activities, showToast, GROUPS, MEETING_TYPES } = useContext(AppContext);
+  const { addActivity, showToast, GROUPS, MEETING_TYPES } = useContext(AppContext);
   const [form, setForm] = useState({ title: '', type: MEETING_TYPES[0], date: initialDate, groups: [] });
+  const [submitting, setSubmitting] = useState(false);
 
   const isIbadah = form.type === 'Ibadah Minggu';
 
@@ -14,12 +15,14 @@ export default function AddActivityModal({ onClose, initialDate = '' }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isIbadah && form.groups.length === 0) return showToast('Pilih minimal 1 grup!', 'error');
     const groups = isIbadah ? GROUPS.map(g => g.id) : form.groups;
-    const newAct = { ...form, groups, id: Date.now(), attendance: {} };
-    setActivities([newAct, ...activities]);
+    setSubmitting(true);
+    const { error } = await addActivity({ title: form.title, type: form.type, date: form.date, groups });
+    setSubmitting(false);
+    if (error) return;
     showToast('Pertemuan berhasil ditambahkan!');
     onClose();
   };
@@ -56,7 +59,7 @@ export default function AddActivityModal({ onClose, initialDate = '' }) {
               </div>
             </div>
           )}
-          <div className="pt-6 flex gap-4"><button type="button" onClick={onClose} className="flex-1 p-3.5 bg-slate-100 dark:bg-slate-800 rounded-2xl font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">Batal</button><button type="submit" className="flex-1 p-3.5 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 dark:shadow-indigo-950 hover:bg-indigo-700">Simpan</button></div>
+          <div className="pt-6 flex gap-4"><button type="button" onClick={onClose} className="flex-1 p-3.5 bg-slate-100 dark:bg-slate-800 rounded-2xl font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">Batal</button><button type="submit" disabled={submitting} className="flex-1 p-3.5 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 dark:shadow-indigo-950 hover:bg-indigo-700 disabled:opacity-60">{submitting ? 'Menyimpan...' : 'Simpan'}</button></div>
         </form>
       </div>
     </div>

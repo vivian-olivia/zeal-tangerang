@@ -1,27 +1,36 @@
-import React, { useContext } from 'react';
-import { ChevronLeft } from 'lucide-react';
+import React, { useContext, useState } from 'react';
+import { ChevronLeft, Trash2 } from 'lucide-react';
 import { AppContext } from '../context/AppContext.jsx';
+import ConfirmDialog from '../components/ConfirmDialog.jsx';
 
 export default function ActivityDetail({ id }) {
-  const { activities, setActivities, members, navigateTo, activeUser, GROUPS } = useContext(AppContext);
+  const { activities, updateActivityAttendance, deleteActivity, members, navigateTo, activeUser, GROUPS } = useContext(AppContext);
   const activity = activities.find(a => a.id === id);
+  const [showDelete, setShowDelete] = useState(false);
   if (!activity) return null;
 
   const isAllGroups = activity.groups.length === GROUPS.length;
   const targetMembers = members.filter(m => activity.groups.includes(m.group));
+  const canDelete = activeUser.role === 'leader' || activeUser.role === 'super_admin';
 
   const handleStatusChange = (memberId, status, reason = '') => {
-    const updated = activities.map(a => a.id === id ? { ...a, attendance: { ...a.attendance, [memberId]: { status, reason } } } : a);
-    setActivities(updated);
+    updateActivityAttendance(id, memberId, status, reason);
   };
 
   return (
     <div className="p-5 md:p-10">
-      <button onClick={() => navigateTo('pertemuan')} className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 mb-8 font-bold transition-colors"><div className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg"><ChevronLeft size={20} /></div> Kembali</button>
+      <div className="flex items-center justify-between mb-8">
+        <button onClick={() => navigateTo('pertemuan')} className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold transition-colors"><div className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg"><ChevronLeft size={20} /></div> Kembali</button>
+        {canDelete && (
+          <button onClick={() => setShowDelete(true)} className="flex items-center gap-2 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 px-4 py-2.5 rounded-xl font-bold text-sm border border-rose-100 dark:border-rose-900 transition-all">
+            <Trash2 size={16}/> Hapus
+          </button>
+        )}
+      </div>
       <div className="bg-gradient-to-br from-indigo-600 to-violet-700 p-8 rounded-3xl shadow-lg shadow-indigo-200 dark:shadow-indigo-950 mb-8 text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -z-0"></div>
         <div className="relative z-10">
-           <h1 className="text-3xl font-black mb-2">{activity.title}</h1>
+           <h1 className="text-3xl font-black mb-2 break-words">{activity.title}</h1>
            <div className="flex flex-wrap gap-3 items-center text-indigo-100 font-medium">
              <span>{activity.date}</span> • <span className="px-2 py-1 bg-white/20 rounded-lg text-sm font-bold">{activity.type}</span> • <span>Target: {isAllGroups ? 'Semua Anggota' : activity.groups.join(', ')}</span>
            </div>
@@ -69,6 +78,15 @@ export default function ActivityDetail({ id }) {
           </tbody>
         </table>
       </div>
+
+      {showDelete && (
+        <ConfirmDialog
+          title="Hapus Pertemuan?"
+          message={`"${activity.title}" akan dihapus permanen beserta seluruh data kehadirannya. Tindakan ini tidak bisa dibatalkan.`}
+          onConfirm={async () => { await deleteActivity(activity.id); navigateTo('pertemuan'); }}
+          onClose={() => setShowDelete(false)}
+        />
+      )}
     </div>
   );
 }

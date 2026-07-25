@@ -1,13 +1,17 @@
 import React, { useContext, useState } from 'react';
-import { ChevronLeft, Heart, GraduationCap, Briefcase, Edit3 } from 'lucide-react';
+import { ChevronLeft, Heart, GraduationCap, Briefcase, Edit3, Trash2, ShieldCheck } from 'lucide-react';
 import { AppContext } from '../context/AppContext.jsx';
 import { getLifeStatusLabel } from '../data/mockData.js';
 import EditProfileModal from '../components/EditProfileModal.jsx';
+import EditStatusModal from '../components/EditStatusModal.jsx';
+import ConfirmDialog from '../components/ConfirmDialog.jsx';
 
 export default function Profile({ id }) {
-  const { members, navigateTo, activeUser, GROUPS, LOVE_LANGUAGES, GENDER_COLORS, LIFE_STATUS_COLORS } = useContext(AppContext);
+  const { members, navigateTo, activeUser, deleteMember, GROUPS, LOVE_LANGUAGES, GENDER_COLORS, LIFE_STATUS_COLORS } = useContext(AppContext);
   const member = members.find(m => m.id === id);
   const [showEdit, setShowEdit] = useState(false);
+  const [showEditStatus, setShowEditStatus] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
 
   if (!member) return <div className="p-10 text-center font-bold text-slate-400 text-xl">Member not found</div>;
 
@@ -26,8 +30,14 @@ export default function Profile({ id }) {
     return false;
   };
 
+  const isSelf = activeUser.id === member.id;
   const isStatusVisible = canViewStatus(activeUser, member);
-  const canEdit = activeUser.id === member.id || activeUser.role === 'super_admin';
+  // Full profile edit: only yourself, or a super_admin overriding anyone.
+  // Editing someone else in Disciples is restricted to their spiritual status —
+  // that's the leader/mentor's call, not a full profile rewrite.
+  const canEditFull = isSelf || activeUser.role === 'super_admin';
+  const canEditStatus = !canEditFull && isStatusVisible;
+  const canDelete = !isSelf && (activeUser.role === 'leader' || activeUser.role === 'super_admin');
   const llColor = LOVE_LANGUAGES[member.loveLang] || LOVE_LANGUAGES['Unknown'];
   const genderColor = GENDER_COLORS[member.gender] || 'bg-slate-300';
   const lifeStatus = getLifeStatusLabel(member);
@@ -39,11 +49,23 @@ export default function Profile({ id }) {
         <button onClick={() => navigateTo('members')} className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold transition-colors">
           <div className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg"><ChevronLeft size={20} /></div> Kembali
         </button>
-        {canEdit && (
-          <button onClick={() => setShowEdit(true)} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 dark:shadow-indigo-950 transition-all">
-            <Edit3 size={16}/> Edit Profil
-          </button>
-        )}
+        <div className="flex items-center gap-3">
+          {canEditFull && (
+            <button onClick={() => setShowEdit(true)} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 dark:shadow-indigo-950 transition-all">
+              <Edit3 size={16}/> Edit Profil
+            </button>
+          )}
+          {canEditStatus && (
+            <button onClick={() => setShowEditStatus(true)} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 dark:shadow-indigo-950 transition-all">
+              <ShieldCheck size={16}/> Update Status
+            </button>
+          )}
+          {canDelete && (
+            <button onClick={() => setShowDelete(true)} className="flex items-center gap-2 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 px-4 py-2.5 rounded-xl font-bold text-sm border border-rose-100 dark:border-rose-900 transition-all">
+              <Trash2 size={16}/> Hapus
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -210,6 +232,17 @@ export default function Profile({ id }) {
 
       {showEdit && (
         <EditProfileModal member={member} isStatusVisible={isStatusVisible} onClose={() => setShowEdit(false)} />
+      )}
+      {showEditStatus && (
+        <EditStatusModal member={member} onClose={() => setShowEditStatus(false)} />
+      )}
+      {showDelete && (
+        <ConfirmDialog
+          title="Hapus Anggota?"
+          message={`${member.name} akan dihapus permanen dari daftar anggota. Tindakan ini tidak bisa dibatalkan.`}
+          onConfirm={async () => { await deleteMember(member.id); navigateTo('members'); }}
+          onClose={() => setShowDelete(false)}
+        />
       )}
     </div>
   );

@@ -31,11 +31,11 @@ export default function Dashboard() {
           <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
             Halo, {activeUser.name.split(' ')[0]}! <span className="text-4xl inline-block animate-wave">👋</span>
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-2 text-lg font-medium">Satu komunitas, satu keluarga.</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-2 text-lg font-medium">We gather to know God and make God known</p>
         </div>
         <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md px-4 py-2 rounded-full border border-slate-200/50 dark:border-slate-700/50 shadow-sm text-sm font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
           <Sparkles size={16} />
-          {activeUser.role === 'super_admin' ? 'Super Admin' : activeUser.role === 'leader' ? 'Leader' : 'Member'}
+          {activeUser.role === 'super_admin' ? 'Super Admin' : activeUser.role === 'leader' ? 'Leader' : activeUser.role === 'guest' ? 'Mode Tamu' : 'Member'}
         </div>
       </div>
 
@@ -64,9 +64,9 @@ export default function Dashboard() {
                     <div className={`w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center ${e.color}`}>
                       <e.icon size={20} />
                     </div>
-                    <div className="flex-1">
-                      <p className="text-slate-800 dark:text-slate-100 font-bold">{e.title}</p>
-                      <p className="text-slate-400 dark:text-slate-500 text-sm font-medium mt-1">{new Date(e.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long' })} • {e.type}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-slate-800 dark:text-slate-100 font-bold truncate">{e.title}</p>
+                      <p className="text-slate-400 dark:text-slate-500 text-sm font-medium mt-1 truncate">{new Date(e.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long' })} • {e.type}</p>
                     </div>
                     <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 whitespace-nowrap">{e.label}</span>
                   </div>

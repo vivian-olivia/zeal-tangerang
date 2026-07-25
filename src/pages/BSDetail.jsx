@@ -1,42 +1,50 @@
 import React, { useContext, useState } from 'react';
-import { ChevronLeft, Plus, Edit3, Calendar, MapPin, AlertCircle, CheckSquare, FileText, Users } from 'lucide-react';
+import { ChevronLeft, Plus, Edit3, Trash2, Calendar, MapPin, AlertCircle, CheckSquare, FileText, Users } from 'lucide-react';
 import { AppContext } from '../context/AppContext.jsx';
 import BSSessionModal from '../components/BSSessionModal.jsx';
+import ConfirmDialog from '../components/ConfirmDialog.jsx';
 
 export default function BSDetail({ id }) {
-  const { bsCases, setBsCases, members, navigateTo, showToast } = useContext(AppContext);
+  const { bsCases, addBsSession, updateBsSession, deleteBsSession, deleteBsCase, members, navigateTo, activeUser, showToast } = useContext(AppContext);
   const bs = bsCases.find(b => b.id === id);
   const [showAdd, setShowAdd] = useState(false);
   const [form, setForm] = useState({ date: '', location: '', material: bs?.sessions.length + 1 || 1, topic: '', sitIn: [], issue: '', actions: '', notes: '' });
   const [editingSession, setEditingSession] = useState(null);
+  const [deletingSessionId, setDeletingSessionId] = useState(null);
+  const [showDeleteCase, setShowDeleteCase] = useState(false);
 
   if (!bs) return null;
 
-  const handleSubmit = (e) => {
+  const canManage = activeUser.role === 'leader' || activeUser.role === 'super_admin';
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const newSession = { ...form, id: Date.now() };
-    const updated = bsCases.map(b => b.id === id ? { ...b, sessions: [newSession, ...b.sessions] } : b);
-    setBsCases(updated);
+    await addBsSession(id, form);
     setShowAdd(false);
     showToast('Sesi BS berhasil ditambahkan!');
   };
 
-  const handleEditSubmit = (e) => {
+  const handleEditSubmit = async (e) => {
     e.preventDefault();
-    const updatedSessions = bs.sessions.map(s => s.id === editingSession.id ? editingSession : s);
-    const updated = bsCases.map(b => b.id === id ? { ...b, sessions: updatedSessions } : b);
-    setBsCases(updated);
+    await updateBsSession(id, editingSession);
     setEditingSession(null);
     showToast('Sesi BS berhasil diperbarui!');
   };
 
   return (
     <div className="p-5 md:p-10">
-       <button onClick={() => navigateTo('bs')} className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 mb-8 font-bold transition-colors"><div className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg"><ChevronLeft size={20} /></div> Kembali</button>
+       <div className="flex items-center justify-between mb-8">
+         <button onClick={() => navigateTo('bs')} className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold transition-colors"><div className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg"><ChevronLeft size={20} /></div> Kembali</button>
+         {canManage && (
+           <button onClick={() => setShowDeleteCase(true)} className="flex items-center gap-2 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 px-4 py-2.5 rounded-xl font-bold text-sm border border-rose-100 dark:border-rose-900 transition-all">
+             <Trash2 size={16}/> Hapus BS
+           </button>
+         )}
+       </div>
 
        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
           <div>
-            <h1 className="text-4xl font-black text-slate-900 dark:text-white mb-2">{bs.personName}</h1>
+            <h1 className="text-4xl font-black text-slate-900 dark:text-white mb-2 break-words">{bs.personName}</h1>
             <p className="text-slate-500 dark:text-slate-400 font-medium">Total {bs.sessions.length} sesi tercatat.</p>
           </div>
           <button onClick={() => setShowAdd(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-indigo-200 dark:shadow-indigo-950 hover:-translate-y-0.5 transition-all">
@@ -54,17 +62,28 @@ export default function BSDetail({ id }) {
 
                 {/* Card */}
                 <div className="w-[calc(100%-5rem)] md:w-[calc(50%-3rem)] bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 hover:shadow-lg transition-all relative">
-                  <button
-                    onClick={() => setEditingSession({ ...ses })}
-                    className="absolute top-4 right-4 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 p-2 bg-slate-50 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-colors"
-                    title="Edit Sesi"
-                  >
-                    <Edit3 size={16}/>
-                  </button>
-                  <div className="text-sm font-bold text-slate-400 dark:text-slate-500 mb-2 flex items-center gap-2">
-                    <Calendar size={14}/> {ses.date} <span className="text-slate-300 dark:text-slate-700">•</span> <MapPin size={14}/> {ses.location}
+                  <div className="absolute top-4 right-4 flex items-center gap-2">
+                    <button
+                      onClick={() => setEditingSession({ ...ses })}
+                      className="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 p-2 bg-slate-50 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-colors"
+                      title="Edit Sesi"
+                    >
+                      <Edit3 size={16}/>
+                    </button>
+                    {canManage && (
+                      <button
+                        onClick={() => setDeletingSessionId(ses.id)}
+                        className="text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-2 bg-slate-50 dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-colors"
+                        title="Hapus Sesi"
+                      >
+                        <Trash2 size={16}/>
+                      </button>
+                    )}
                   </div>
-                  <h3 className="text-xl font-extrabold text-slate-900 dark:text-white mb-5">{ses.topic}</h3>
+                  <div className="pr-16 text-sm font-bold text-slate-400 dark:text-slate-500 mb-2 flex items-center flex-wrap gap-x-2 gap-y-1">
+                    <Calendar size={14} className="shrink-0"/> {ses.date} <span className="text-slate-300 dark:text-slate-700">•</span> <MapPin size={14} className="shrink-0"/> <span className="break-words">{ses.location}</span>
+                  </div>
+                  <h3 className="pr-16 text-xl font-extrabold text-slate-900 dark:text-white mb-5 break-words">{ses.topic}</h3>
 
                   <div className="space-y-3 mb-6">
                     <div className="bg-rose-50/50 dark:bg-rose-500/10 p-4 rounded-2xl border border-rose-100 dark:border-rose-900"><div className="text-[10px] font-black text-rose-500 dark:text-rose-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><AlertCircle size={12}/> Issue</div><p className="text-sm font-medium text-rose-900 dark:text-rose-200 leading-relaxed">{ses.issue || '-'}</p></div>
@@ -102,6 +121,24 @@ export default function BSDetail({ id }) {
             members={members}
             onSubmit={handleEditSubmit}
             onClose={() => setEditingSession(null)}
+          />
+       )}
+
+       {deletingSessionId != null && (
+          <ConfirmDialog
+            title="Hapus Sesi?"
+            message="Sesi BS ini akan dihapus permanen. Tindakan ini tidak bisa dibatalkan."
+            onConfirm={async () => { await deleteBsSession(id, deletingSessionId); setDeletingSessionId(null); }}
+            onClose={() => setDeletingSessionId(null)}
+          />
+       )}
+
+       {showDeleteCase && (
+          <ConfirmDialog
+            title="Hapus Bible Study?"
+            message={`Seluruh riwayat BS untuk ${bs.personName} akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.`}
+            onConfirm={async () => { await deleteBsCase(id); navigateTo('bs'); }}
+            onClose={() => setShowDeleteCase(false)}
           />
        )}
     </div>

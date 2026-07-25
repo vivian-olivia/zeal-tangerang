@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Home, Users, Activity, CalendarDays, BookOpen, ChevronDown, Sun, Moon } from 'lucide-react';
+import { Home, Users, Activity, CalendarDays, BookOpen, Sun, Moon, LogOut } from 'lucide-react';
 import { AppContext } from '../context/AppContext.jsx';
 import zealLogo from '../../assets/Logo Hitam Zeal.png';
 
@@ -11,8 +11,11 @@ const navItems = [
   { id: 'bs', label: 'Bible Study', icon: BookOpen },
 ];
 
+const ROLE_LABELS = { super_admin: 'super_admin', leader: 'leader', member: 'member', guest: 'Mode Tamu' };
+
 export default function Sidebar() {
-  const { currentPage, navigateTo, activeUser, setActiveUser, members, isDark, toggleDark } = useContext(AppContext);
+  const { currentPage, navigateTo, activeUser, logout, isDark, toggleDark } = useContext(AppContext);
+  const isGuest = activeUser.role === 'guest';
 
   return (
     <nav className="w-72 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-r border-slate-200/60 dark:border-slate-800 flex flex-col justify-between z-20 hidden md:flex shadow-sm">
@@ -55,22 +58,31 @@ export default function Sidebar() {
       </div>
 
       <div className="p-6">
-        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/40 dark:to-purple-950/40 p-4 rounded-3xl border border-indigo-100/50 dark:border-indigo-900/50 shadow-sm">
-          <div className="text-xs text-indigo-800/60 dark:text-indigo-300/60 font-bold uppercase tracking-wider mb-3 px-1">Ganti Role Simulasi:</div>
-          <div className="relative">
-            <select
-              value={activeUser.id}
-              onChange={(e) => setActiveUser(members.find(m => m.id === parseInt(e.target.value)))}
-              className="w-full bg-white/80 dark:bg-slate-800/80 backdrop-blur border border-indigo-100 dark:border-indigo-900 rounded-xl p-3 pl-4 pr-10 text-sm font-medium text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none appearance-none cursor-pointer shadow-sm"
+        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/40 dark:to-purple-950/40 p-4 rounded-3xl border border-indigo-100/50 dark:border-indigo-900/50 shadow-sm flex items-center justify-between gap-3">
+          {isGuest ? (
+            <div className="min-w-0 flex-1 p-1">
+              <div className="font-bold text-slate-800 dark:text-slate-100 text-sm truncate">{activeUser.name}</div>
+              <div className="text-xs text-indigo-800/60 dark:text-indigo-300/60 font-bold uppercase tracking-wider truncate">{ROLE_LABELS.guest}</div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => navigateTo('profile_' + activeUser.id)}
+              className="min-w-0 flex-1 text-left rounded-xl hover:bg-white/50 dark:hover:bg-slate-800/40 transition-colors p-1 -m-1"
+              title="Lihat & edit profil saya"
             >
-              {members.filter(m => m.role === 'super_admin' || m.role === 'leader' || m.id === 3).map(m => (
-                <option key={m.id} value={m.id}>
-                  {m.name.split(' ')[0]} ({m.role})
-                </option>
-              ))}
-            </select>
-            <ChevronDown size={16} className="absolute right-4 top-3.5 text-indigo-400 pointer-events-none" />
-          </div>
+              <div className="font-bold text-slate-800 dark:text-slate-100 text-sm truncate">{activeUser.name}</div>
+              <div className="text-xs text-indigo-800/60 dark:text-indigo-300/60 font-bold uppercase tracking-wider truncate">{ROLE_LABELS[activeUser.role] || activeUser.role}</div>
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={logout}
+            className="p-2.5 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border border-indigo-100 dark:border-indigo-900 rounded-xl text-indigo-500 dark:text-indigo-300 transition-colors flex-shrink-0"
+            title={isGuest ? 'Keluar dari Mode Tamu' : 'Keluar'}
+          >
+            <LogOut size={18} />
+          </button>
         </div>
       </div>
     </nav>
